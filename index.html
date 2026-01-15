@@ -94,9 +94,43 @@
 
     /* ==================== Hero 区域 ==================== */
     .hero {
-      padding: 140px 0 80px;
+      padding: 100px 0 60px;
       text-align: center;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
     }
+    /* 🦉 大头猫头鹰动画区域 */
+    .hero-owl {
+      width: clamp(260px, 40vw, 380px);
+      height: clamp(260px, 40vw, 380px);
+      margin: 0 auto 30px;
+      position: relative;
+      animation: owlFloat 4s ease-in-out infinite;
+    }
+    .hero-owl img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      filter: drop-shadow(0 20px 40px rgba(245, 166, 35, 0.25));
+    }
+    /* 猫头鹰图片占位 */
+    .owl-placeholder {
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(145deg, #FFE8D0, #FFF0DC);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      border: 3px dashed var(--primary);
+      color: var(--text-light);
+      font-size: 0.9rem;
+      box-shadow: 0 20px 50px rgba(245, 166, 35, 0.2);
+    }
+    .owl-placeholder span { font-size: 4rem; margin-bottom: 10px; }
     .hero-badge {
       display: inline-block;
       background: linear-gradient(135deg, var(--secondary), #6EE7DE);
@@ -105,54 +139,45 @@
       border-radius: 20px;
       font-size: 0.875rem;
       font-weight: 500;
-      margin-bottom: 24px;
-      animation: float 3s ease-in-out infinite;
+      margin-bottom: 20px;
     }
     .hero h1 {
       font-size: clamp(2rem, 5vw, 3rem);
       font-weight: 700;
-      margin-bottom: 20px;
+      margin-bottom: 16px;
       background: linear-gradient(135deg, var(--text-main) 0%, #5A5A5A 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
     }
     .hero-tagline {
-      font-size: clamp(1.125rem, 2.5vw, 1.375rem);
+      font-size: clamp(1rem, 2.5vw, 1.25rem);
       color: var(--text-light);
-      max-width: 600px;
-      margin: 0 auto 40px;
+      max-width: 500px;
+      margin: 0 auto 30px;
     }
-    /* Hero 图片占位 */
-    .hero-image {
-      max-width: 700px;
-      margin: 0 auto;
-      background: linear-gradient(145deg, #FFE4C4, #FFF0DC);
-      border-radius: 24px;
-      padding: 40px;
-      box-shadow: var(--shadow);
-      position: relative;
-      overflow: hidden;
+    .hero-btn {
+      display: inline-block;
+      background: var(--primary);
+      color: #fff;
+      padding: 14px 32px;
+      border-radius: 28px;
+      font-weight: 600;
+      font-size: 1rem;
+      transition: transform 0.2s, box-shadow 0.2s;
     }
-    .hero-image::before {
-      content: '';
-      position: absolute;
-      top: -50%;
-      left: -50%;
-      width: 200%;
-      height: 200%;
-      background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 70%);
-      animation: shimmer 4s ease-in-out infinite;
+    .hero-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 30px rgba(245, 166, 35, 0.4);
     }
+    /* 故事区域图片占位 */
     .image-placeholder {
       background: rgba(255,255,255,0.6);
       border-radius: 16px;
-      padding: 60px 40px;
+      padding: 50px 30px;
       border: 2px dashed var(--primary);
       color: var(--text-light);
-      font-size: 0.95rem;
-      position: relative;
-      z-index: 1;
+      font-size: 0.9rem;
     }
 
     /* ==================== 特色区域 ==================== */
@@ -361,38 +386,20 @@
       color: var(--text-light);
       font-size: 0.875rem;
     }
-    .footer-links {
-      margin-top: 16px;
-      display: flex;
-      justify-content: center;
-      gap: 24px;
-      font-size: 0.875rem;
-    }
-    .footer-links a {
-      color: var(--text-light);
-      transition: color 0.2s;
-    }
-    .footer-links a:hover { color: var(--primary); }
 
     /* ==================== 动画 ==================== */
-    @keyframes float {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-8px); }
-    }
-    @keyframes shimmer {
-      0%, 100% { transform: rotate(0deg); opacity: 0.5; }
-      50% { transform: rotate(180deg); opacity: 0.8; }
+    @keyframes owlFloat {
+      0%, 100% { transform: translateY(0) scale(1); }
+      50% { transform: translateY(-15px) scale(1.02); }
     }
 
     /* ==================== 响应式 ==================== */
     @media (max-width: 768px) {
-      .story-content {
-        grid-template-columns: 1fr;
-        gap: 30px;
-      }
+      .hero { min-height: auto; padding: 100px 0 50px; }
+      .hero-owl { width: 220px; height: 220px; }
+      .story-content { grid-template-columns: 1fr; gap: 30px; }
       .story-image { order: -1; }
-      .hero { padding: 120px 0 60px; }
-      .features, .audience, .story, .cta { padding: 60px 0; }
+      .features, .audience, .story, .cta { padding: 50px 0; }
     }
   </style>
 </head>
@@ -412,16 +419,18 @@
   <!-- ==================== Hero 区域 ==================== -->
   <section class="hero">
     <div class="container">
-      <span class="hero-badge">AI Reading Companion</span>
-      <h1>猫头鹰 AI 伴读</h1>
-      <p class="hero-tagline">让孩子开口、愿意读、读得懂、记得住。<br>在故事世界里，和 Rune 一起探险。</p>
-      <!-- 🖼️ 主图占位：替换为 App 主界面截图或猫头鹰角色图 -->
-      <div class="hero-image">
-        <div class="image-placeholder">
-          🦉 App 主界面 / 猫头鹰角色图<br>
-          <small>建议尺寸：1200 × 800 px</small>
+      <!-- 🖼️ 大头猫头鹰：替换 src 为实际图片路径 -->
+      <div class="hero-owl">
+        <!-- <img src="owl.png" alt="Rune 猫头鹰"> -->
+        <div class="owl-placeholder">
+          <span>🦉</span>
+          猫头鹰图片<br><small>建议：透明背景 PNG</small>
         </div>
       </div>
+      <span class="hero-badge">AI Reading Companion</span>
+      <h1>猫头鹰 AI 伴读</h1>
+      <p class="hero-tagline">让孩子开口、愿意读、读得懂、记得住<br>在故事世界里，和 Rune 一起探险</p>
+      <a href="#cta" class="hero-btn">了解更多</a>
     </div>
   </section>
 
@@ -545,11 +554,6 @@
       </div>
       <p>© 2026 Cosmoswit. All rights reserved.</p>
       <p style="margin-top: 8px;">www.cosmoswit.com</p>
-      <div class="footer-links">
-        <a href="#">隐私政策</a>
-        <a href="#">用户协议</a>
-        <a href="#">联系我们</a>
-      </div>
     </div>
   </footer>
 
