@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cosmoswit · 猫头鹰 AI 伴读</title>
+  <meta name="description" content="让孩子开口、愿意读、读得懂、记得住。AI 阅读伙伴，陪孩子在故事世界里探险。">
+  <meta property="og:title" content="Cosmoswit · 猫头鹰 AI 伴读">
+  <meta property="og:description" content="让孩子开口、愿意读、读得懂、记得住">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    /* ==================== 基础重置 ==================== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; font-size: 16px; }
+    body {
+      font-family: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: linear-gradient(180deg, #FFF9F0 0%, #FFF5E6 100%);
+      color: #3A3A3A;
+      line-height: 1.7;
+      min-height: 100vh;
+    }
+    img { max-width: 100%; display: block; }
+    a { text-decoration: none; color: inherit; }
+
+    /* ==================== 色彩变量 ==================== */
+    :root {
+      --primary: #F5A623;      /* 温暖橙 */
+      --secondary: #4ECDC4;    /* 青绿色 */
+      --accent: #FF6B6B;       /* 珊瑚红 */
+      --bg-warm: #FFF9F0;      /* 温暖米白 */
+      --bg-card: #FFFFFF;      /* 卡片白 */
+      --text-main: #3A3A3A;    /* 主文字 */
+      --text-light: #6B6B6B;   /* 次要文字 */
+      --shadow: 0 8px 30px rgba(245, 166, 35, 0.15);
+    }
+
+    /* ==================== 布局容器 ==================== */
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* ==================== 导航栏 ==================== */
+    .nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      background: rgba(255, 249, 240, 0.95);
+      backdrop-filter: blur(10px);
+      padding: 16px 0;
+      transition: box-shadow 0.3s ease;
+    }
+    .nav.scrolled { box-shadow: 0 2px 20px rgba(0,0,0,0.08); }
+    .nav-inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      font-size: 1.25rem;
+      color: var(--primary);
+    }
+    .logo-icon {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, var(--primary), #FFB84D);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+    }
+    .nav-btn {
+      background: var(--primary);
+      color: #fff;
+      padding: 10px 24px;
+      border-radius: 24px;
+      font-weight: 500;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .nav-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(245, 166, 35, 0.4);
+    }
+
+    /* ==================== Hero 区域 ==================== */
+    .hero {
+      padding: 100px 0 60px;
+      text-align: center;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    /* 🦉 大头猫头鹰动画区域 */
+    .hero-owl {
+      width: clamp(260px, 40vw, 380px);
+      height: clamp(260px, 40vw, 380px);
+      margin: 0 auto 30px;
+      position: relative;
+      animation: owlFloat 4s ease-in-out infinite;
+    }
+    .hero-owl img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      filter: drop-shadow(0 20px 40px rgba(245, 166, 35, 0.25));
+    }
+    /* 猫头鹰图片占位 */
+    .owl-placeholder {
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(145deg, #FFE8D0, #FFF0DC);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      border: 3px dashed var(--primary);
+      color: var(--text-light);
+      font-size: 0.9rem;
+      box-shadow: 0 20px 50px rgba(245, 166, 35, 0.2);
+    }
+    .owl-placeholder span { font-size: 4rem; margin-bottom: 10px; }
+    .hero-badge {
+      display: inline-block;
+      background: linear-gradient(135deg, var(--secondary), #6EE7DE);
+      color: #fff;
+      padding: 6px 16px;
+      border-radius: 20px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      margin-bottom: 20px;
+    }
+    .hero h1 {
+      font-size: clamp(2rem, 5vw, 3rem);
+      font-weight: 700;
+      margin-bottom: 16px;
+      background: linear-gradient(135deg, var(--text-main) 0%, #5A5A5A 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero-tagline {
+      font-size: clamp(1rem, 2.5vw, 1.25rem);
+      color: var(--text-light);
+      max-width: 500px;
+      margin: 0 auto 30px;
+    }
+    .hero-btn {
+      display: inline-block;
+      background: var(--primary);
+      color: #fff;
+      padding: 14px 32px;
+      border-radius: 28px;
+      font-weight: 600;
+      font-size: 1rem;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .hero-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 30px rgba(245, 166, 35, 0.4);
+    }
+    /* 故事区域图片占位 */
+    .image-placeholder {
+      background: rgba(255,255,255,0.6);
+      border-radius: 16px;
+      padding: 50px 30px;
+      border: 2px dashed var(--primary);
+      color: var(--text-light);
+      font-size: 0.9rem;
+    }
+
+    /* ==================== 特色区域 ==================== */
+    .features {
+      padding: 80px 0;
+    }
+    .section-title {
+      text-align: center;
+      font-size: clamp(1.5rem, 3vw, 2rem);
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+    .section-subtitle {
+      text-align: center;
+      color: var(--text-light);
+      margin-bottom: 50px;
+      font-size: 1rem;
+    }
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 24px;
+    }
+    .feature-card {
+      background: var(--bg-card);
+      border-radius: 20px;
+      padding: 32px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .feature-card:hover {
+      transform: translateY(-6px);
+      box-shadow: var(--shadow);
+    }
+    .feature-icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.75rem;
+      margin-bottom: 20px;
+    }
+    .feature-icon.orange { background: linear-gradient(135deg, #FFF0DC, #FFE4C4); }
+    .feature-icon.teal { background: linear-gradient(135deg, #E0FAF8, #C4F0ED); }
+    .feature-icon.coral { background: linear-gradient(135deg, #FFE4E4, #FFCECE); }
+    .feature-card h3 {
+      font-size: 1.125rem;
+      font-weight: 600;
+      margin-bottom: 10px;
+      color: var(--text-main);
+    }
+    .feature-card p {
+      color: var(--text-light);
+      font-size: 0.95rem;
+      line-height: 1.65;
+    }
+
+    /* ==================== 适合人群 ==================== */
+    .audience {
+      padding: 80px 0;
+      background: linear-gradient(180deg, transparent, rgba(78, 205, 196, 0.08));
+    }
+    .audience-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 32px;
+      margin-top: 40px;
+    }
+    .audience-card {
+      background: var(--bg-card);
+      border-radius: 20px;
+      padding: 36px;
+      text-align: center;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+    }
+    .audience-icon {
+      font-size: 3rem;
+      margin-bottom: 20px;
+    }
+    .audience-card h3 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 16px;
+      color: var(--secondary);
+    }
+    .audience-list {
+      list-style: none;
+      text-align: left;
+    }
+    .audience-list li {
+      padding: 8px 0;
+      padding-left: 24px;
+      position: relative;
+      color: var(--text-light);
+      font-size: 0.95rem;
+    }
+    .audience-list li::before {
+      content: '✓';
+      position: absolute;
+      left: 0;
+      color: var(--secondary);
+      font-weight: 700;
+    }
+
+    /* ==================== 故事背景 ==================== */
+    .story {
+      padding: 80px 0;
+    }
+    .story-content {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 50px;
+      align-items: center;
+    }
+    .story-text h2 {
+      font-size: clamp(1.375rem, 3vw, 1.75rem);
+      font-weight: 700;
+      margin-bottom: 20px;
+      color: var(--text-main);
+    }
+    .story-text p {
+      color: var(--text-light);
+      margin-bottom: 16px;
+      font-size: 0.95rem;
+    }
+    .story-text .highlight {
+      color: var(--primary);
+      font-weight: 500;
+    }
+    .story-image {
+      background: linear-gradient(145deg, #E0FAF8, #C4F0ED);
+      border-radius: 24px;
+      padding: 40px;
+      box-shadow: 0 8px 30px rgba(78, 205, 196, 0.2);
+    }
+
+    /* ==================== CTA 区域 ==================== */
+    .cta {
+      padding: 80px 0;
+      text-align: center;
+    }
+    .cta-box {
+      background: linear-gradient(135deg, var(--primary), #FFB84D);
+      border-radius: 28px;
+      padding: 60px 40px;
+      color: #fff;
+      position: relative;
+      overflow: hidden;
+    }
+    .cta-box::before {
+      content: '';
+      position: absolute;
+      top: -100px;
+      right: -100px;
+      width: 300px;
+      height: 300px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 50%;
+    }
+    .cta-box h2 {
+      font-size: clamp(1.5rem, 3vw, 2rem);
+      font-weight: 700;
+      margin-bottom: 16px;
+      position: relative;
+    }
+    .cta-box p {
+      font-size: 1.05rem;
+      opacity: 0.95;
+      margin-bottom: 30px;
+      position: relative;
+    }
+    .cta-btn {
+      display: inline-block;
+      background: #fff;
+      color: var(--primary);
+      padding: 14px 36px;
+      border-radius: 28px;
+      font-weight: 600;
+      font-size: 1rem;
+      transition: transform 0.2s, box-shadow 0.2s;
+      position: relative;
+    }
+    .cta-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    }
+
+    /* ==================== 页脚 ==================== */
+    .footer {
+      padding: 40px 0;
+      text-align: center;
+      border-top: 1px solid rgba(0,0,0,0.06);
+    }
+    .footer-logo {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-weight: 600;
+      color: var(--primary);
+      margin-bottom: 16px;
+    }
+    .footer p {
+      color: var(--text-light);
+      font-size: 0.875rem;
+    }
+
+    /* ==================== 动画 ==================== */
+    @keyframes owlFloat {
+      0%, 100% { transform: translateY(0) scale(1); }
+      50% { transform: translateY(-15px) scale(1.02); }
+    }
+
+    /* ==================== 响应式 ==================== */
+    @media (max-width: 768px) {
+      .hero { min-height: auto; padding: 100px 0 50px; }
+      .hero-owl { width: 220px; height: 220px; }
+      .story-content { grid-template-columns: 1fr; gap: 30px; }
+      .story-image { order: -1; }
+      .features, .audience, .story, .cta { padding: 50px 0; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ==================== 导航栏 ==================== -->
+  <nav class="nav" id="nav">
+    <div class="container nav-inner">
+      <a href="#" class="logo">
+        <span class="logo-icon">🦉</span>
+        <span>Cosmoswit</span>
+      </a>
+      <a href="#cta" class="nav-btn">开始体验</a>
+    </div>
+  </nav>
+
+  <!-- ==================== Hero 区域 ==================== -->
+  <section class="hero">
+    <div class="container">
+      <!-- 🖼️ 大头猫头鹰：替换 src 为实际图片路径 -->
+      <div class="hero-owl">
+        <!-- <img src="owl.png" alt="Rune 猫头鹰"> -->
+        <div class="owl-placeholder">
+          <span>🦉</span>
+          猫头鹰图片<br><small>建议：透明背景 PNG</small>
+        </div>
+      </div>
+      <span class="hero-badge">AI Reading Companion</span>
+      <h1>猫头鹰 AI 伴读</h1>
+      <p class="hero-tagline">让孩子开口、愿意读、读得懂、记得住<br>在故事世界里，和 Rune 一起探险</p>
+      <a href="#cta" class="hero-btn">了解更多</a>
+    </div>
+  </section>
+
+  <!-- ==================== 核心亮点 ==================== -->
+  <section class="features">
+    <div class="container">
+      <h2 class="section-title">What makes us different</h2>
+      <p class="section-subtitle">六大核心亮点，重新定义 AI 伴读体验</p>
+      <div class="features-grid">
+        <!-- 亮点 1 -->
+        <div class="feature-card">
+          <div class="feature-icon orange">🔮</div>
+          <h3>按住说话 · 松手听</h3>
+          <p>孩子按住「魔法球」讲话，松手后猫头鹰思考并用语音回答，交互自然流畅，像和真正的伙伴对话。</p>
+        </div>
+        <!-- 亮点 2 -->
+        <div class="feature-card">
+          <div class="feature-icon teal">📖</div>
+          <h3>围绕「这一页」聊书</h3>
+          <p>支持围绕角色、情节、场景提问；回答忠于原文，通过轻量 RAG 提供可靠依据与贴合上下文的解释。</p>
+        </div>
+        <!-- 亮点 3 -->
+        <div class="feature-card">
+          <div class="feature-icon coral">🎣</div>
+          <h3>不剧透，更吊胃口</h3>
+          <p>涉及关键悬念时，会接住问题、避免剧透，同时给出「阅读钩子」，把孩子引回书里继续探索。</p>
+        </div>
+        <!-- 亮点 4 -->
+        <div class="feature-card">
+          <div class="feature-icon orange">🃏</div>
+          <h3>智能单词卡</h3>
+          <p>查词、发音、拼写等意图触发单词卡；不打断主线，自动沉淀到「我的单词卡」，支持复习。</p>
+        </div>
+        <!-- 亮点 5 -->
+        <div class="feature-card">
+          <div class="feature-icon teal">🏅</div>
+          <h3>好问题 = 看得见的成长</h3>
+          <p>当孩子提出高质量问题，触发即时奖励与勋章，把「会提问」变成孩子的能力资产。</p>
+        </div>
+        <!-- 亮点 6 -->
+        <div class="feature-card">
+          <div class="feature-icon coral">⚡</div>
+          <h3>轻量节奏管理</h3>
+          <p>能量条让体验可持续；低能量温柔提醒，耗尽则引导休息，让阅读保持温和的节奏。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== 适合人群 ==================== -->
+  <section class="audience">
+    <div class="container">
+      <h2 class="section-title">谁适合使用</h2>
+      <p class="section-subtitle">为孩子与家长，各自带来看得见的价值</p>
+      <div class="audience-grid">
+        <!-- 孩子 -->
+        <div class="audience-card">
+          <div class="audience-icon">👦</div>
+          <h3>6–15 岁的孩子</h3>
+          <ul class="audience-list">
+            <li>更敢开口：把「想聊」变成「会问」</li>
+            <li>更能坚持：轻量任务建立正反馈</li>
+            <li>更会阅读：强调理解与批判性提问</li>
+            <li>正在建立英语阅读习惯</li>
+          </ul>
+        </div>
+        <!-- 家长 -->
+        <div class="audience-card">
+          <div class="audience-icon">👨‍👩‍👧</div>
+          <h3>想省心的家长</h3>
+          <ul class="audience-list">
+            <li>可分享的成长记录与勋章海报</li>
+            <li>周报高光，一键保存分享</li>
+            <li>家长模式管理孩子档案</li>
+            <li>不靠催促，看得见进步</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== 故事背景 ==================== -->
+  <section class="story">
+    <div class="container">
+      <div class="story-content">
+        <div class="story-text">
+          <h2>认识 Rune —— 故事守护者</h2>
+          <p>在故事世界里，每一本书都是一道防线。<span class="highlight">空白者（The Blank）</span>会让书里的文字与图像慢慢变淡，直到整本书变成空白。</p>
+          <p>Rune 为了守住所有故事，把自己的记忆与魔力拆成碎片，散落在各本书里。他需要现实世界的孩子来一起读，把每本书里的符文重新点亮。</p>
+          <p><span class="highlight">读得越多，故事越不容易变空白。</span>每一次开口、每一个好问题，都在帮助 Rune 恢复力量，也让孩子悄悄长出更强的语言与思考。</p>
+        </div>
+        <!-- 🖼️ 故事图占位：替换为 Rune 角色或阅读场景图 -->
+        <div class="story-image">
+          <div class="image-placeholder">
+            🦉 Rune 角色图 / 阅读场景<br>
+            <small>建议尺寸：600 × 500 px</small>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== CTA 区域 ==================== -->
+  <section class="cta" id="cta">
+    <div class="container">
+      <div class="cta-box">
+        <h2>开启孩子的阅读探险</h2>
+        <p>让好奇心留在书里，让提问能力带到现实里</p>
+        <!-- 🔗 按钮链接：替换为 App Store / 官方下载链接 -->
+        <a href="#" class="cta-btn">即将上线 · 敬请期待</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== 页脚 ==================== -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-logo">
+        <span>🦉</span>
+        <span>Cosmoswit</span>
+      </div>
+      <p>© 2026 Cosmoswit. All rights reserved.</p>
+      <p style="margin-top: 8px;">www.cosmoswit.com</p>
+    </div>
+  </footer>
+
+  <!-- ==================== 轻量 JS：导航栏滚动效果 ==================== -->
+  <script>
+    // 导航栏滚动时添加阴影
+    const nav = document.getElementById('nav');
+    window.addEventListener('scroll', () => {
+      nav.classList.toggle('scrolled', window.scrollY > 20);
+    });
+  </script>
+
+</body>
+</html>
